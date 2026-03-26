@@ -4,7 +4,8 @@
  *
  * Vanilla JS — no dependencies.
  * Handles scroll animations, parallax, counter animation,
- * mobile menu, lazy-loaded iframes, and JSON-LD injection.
+ * mobile menu, lazy-loaded iframes, and JSON-LD injection,
+ * and Dynamic i18n switching.
  */
 
 'use strict';
@@ -39,15 +40,15 @@ const initScrollAnimations = () => {
   if (!animatedElements.length) return;
 
   const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.1 }
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
   );
 
   animatedElements.forEach((el) => observer.observe(el));
@@ -120,7 +121,7 @@ const initHeroParallax = () => {
 
   // Respect reduced-motion preference.
   const prefersReducedMotion = window.matchMedia(
-    '(prefers-reduced-motion: reduce)'
+      '(prefers-reduced-motion: reduce)'
   ).matches;
   if (prefersReducedMotion) return;
 
@@ -163,7 +164,7 @@ const animateCounter = (el) => {
     // Ease-out cubic for a natural deceleration.
     const eased = 1 - Math.pow(1 - progress, 3);
 
-    el.textContent = Math.round(eased * target).toLocaleString('ja-JP');
+    el.textContent = Math.round(eased * target).toLocaleString(document.documentElement.lang === 'en' ? 'en-US' : 'ja-JP');
 
     if (progress < 1) {
       requestAnimationFrame(step);
@@ -178,15 +179,15 @@ const initCounterAnimation = () => {
   if (!counters.length) return;
 
   const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          animateCounter(entry.target);
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.1 }
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            animateCounter(entry.target);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
   );
 
   counters.forEach((el) => {
@@ -302,9 +303,9 @@ const initMobileMenu = () => {
   // Close menu when clicking outside.
   document.addEventListener('click', (e) => {
     if (
-      navLinks.classList.contains('active') &&
-      !navLinks.contains(e.target) &&
-      !hamburger.contains(e.target)
+        navLinks.classList.contains('active') &&
+        !navLinks.contains(e.target) &&
+        !hamburger.contains(e.target)
     ) {
       navLinks.classList.remove('active');
       hamburger.classList.remove('active');
@@ -329,43 +330,38 @@ const initMobileMenu = () => {
    ========================================================= */
 
 const initLazyIframes = () => {
-  // Each placeholder should have:
-  //   class="lazy-iframe"
-  //   data-src="https://www.youtube.com/embed/VIDEO_ID"
-  //   (optional) data-title="Video title"
   const placeholders = document.querySelectorAll('.lazy-iframe');
   if (!placeholders.length) return;
 
   const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
 
-        const placeholder = entry.target;
-        const src = placeholder.dataset.src;
-        if (!src) return;
+          const placeholder = entry.target;
+          const src = placeholder.dataset.src;
+          if (!src) return;
 
-        const iframe = document.createElement('iframe');
-        iframe.src = src;
-        iframe.title = placeholder.dataset.title || '埋め込み動画';
-        iframe.width = placeholder.dataset.width || '560';
-        iframe.height = placeholder.dataset.height || '315';
-        iframe.frameBorder = '0';
-        iframe.allow =
-          'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-        iframe.allowFullscreen = true;
-        iframe.loading = 'lazy';
+          const iframe = document.createElement('iframe');
+          iframe.src = src;
+          iframe.title = placeholder.dataset.title || '埋め込み動画';
+          iframe.width = placeholder.dataset.width || '560';
+          iframe.height = placeholder.dataset.height || '315';
+          iframe.frameBorder = '0';
+          iframe.allow =
+              'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+          iframe.allowFullscreen = true;
+          iframe.loading = 'lazy';
 
-        // Replace placeholder with iframe.
-        placeholder.replaceWith(iframe);
-        observer.unobserve(placeholder);
-      });
-    },
-    {
-      // Start loading slightly before the element enters the viewport.
-      rootMargin: '200px 0px',
-      threshold: 0,
-    }
+          // Replace placeholder with iframe.
+          placeholder.replaceWith(iframe);
+          observer.unobserve(placeholder);
+        });
+      },
+      {
+        rootMargin: '200px 0px',
+        threshold: 0,
+      }
   );
 
   placeholders.forEach((el) => observer.observe(el));
@@ -377,36 +373,28 @@ const initLazyIframes = () => {
 
 const injectStructuredData = () => {
   const schemas = [
-    // Organization
     {
       '@context': 'https://schema.org',
       '@type': 'Organization',
       name: '川野車人形保存会',
       alternateName: 'Kawano Kuruma Ningyo Hozonkai',
-      description:
-        '奥多摩湖の湖底に沈んだ小河内村をARで可視化するプロジェクト',
+      description: '奥多摩湖の湖底に沈んだ小河内村をARで可視化するプロジェクト',
       url: window.location.origin,
     },
-
-    // WebSite
     {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       name: '小河内タイムレンズ',
       alternateName: 'Ogouchi Time Lens',
       url: window.location.origin,
-      description:
-        '奥多摩湖の湖底に沈んだ小河内村をARで可視化するプロジェクト「小河内タイムレンズ」の公式サイト',
+      description: '奥多摩湖の湖底に沈んだ小河内村をARで可視化するプロジェクト「小河内タイムレンズ」の公式サイト',
       inLanguage: 'ja',
     },
-
-    // Event
     {
       '@context': 'https://schema.org',
       '@type': 'Event',
       name: '奥多摩町町制施行70周年記念事業 — 小河内タイムレンズ',
-      description:
-        '奥多摩町の町制施行70周年を記念し、小河内ダム建設で湖底に沈んだ小河内村をAR技術で蘇らせるプロジェクト',
+      description: '奥多摩町の町制施行70周年を記念し、小河内ダム建設で湖底に沈んだ小河内村をAR技術で蘇らせるプロジェクト',
       startDate: '2025-04-01',
       eventStatus: 'https://schema.org/EventScheduled',
       eventAttendanceMode: 'https://schema.org/MixedEventAttendanceMode',
@@ -444,7 +432,7 @@ const initHeroPhotoBubbles = () => {
   if (!container) return;
 
   const prefersReducedMotion = window.matchMedia(
-    '(prefers-reduced-motion: reduce)'
+      '(prefers-reduced-motion: reduce)'
   ).matches;
 
   const photoFiles = [
@@ -458,13 +446,11 @@ const initHeroPhotoBubbles = () => {
     '94.jpg','95.jpg','96.jpg','97.jpg','98.jpg','99.jpg',
   ];
 
-  // Fisher-Yates shuffle
   for (let i = photoFiles.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [photoFiles[i], photoFiles[j]] = [photoFiles[j], photoFiles[i]];
   }
 
-  // モバイル: アニメーションなし、ロゴ上に1つの静的バブル写真を表示
   const vw = window.innerWidth;
   if (vw <= 768) {
     const heroContent = document.querySelector('.hero-content');
@@ -481,21 +467,19 @@ const initHeroPhotoBubbles = () => {
     return;
   }
 
-  // PC: 既存の浮遊バブルアニメーション
   let nLarge, nMedium, nSmall;
-  if (vw <= 480) {        // スマホ小: 合計3〜4
+  if (vw <= 480) {
     nLarge = 1; nMedium = 1; nSmall = 1 + Math.floor(Math.random() * 2);
-  } else if (vw <= 768) { // スマホ大〜タブレット: 合計4〜6
+  } else if (vw <= 768) {
     nLarge = 1; nMedium = 2; nSmall = 1 + Math.floor(Math.random() * 2);
-  } else {                // PC: 合計7〜9
+  } else {
     nLarge = 2; nMedium = 3; nSmall = 2 + Math.floor(Math.random() * 2);
   }
 
-  // サイズ枠ごとにランダムなpx値を生成
   const sizeForCategory = (category) => {
-    if (category === 'large')  return 150 + Math.floor(Math.random() * 51);  // 150〜200px
-    if (category === 'medium') return 90 + Math.floor(Math.random() * 51);   // 90〜140px
-    return 40 + Math.floor(Math.random() * 41);                              // 40〜80px (small)
+    if (category === 'large')  return 150 + Math.floor(Math.random() * 51);
+    if (category === 'medium') return 90 + Math.floor(Math.random() * 51);
+    return 40 + Math.floor(Math.random() * 41);
   };
 
   const plan = [
@@ -504,8 +488,6 @@ const initHeroPhotoBubbles = () => {
     ...Array(nSmall).fill('small'),
   ];
   const selected = photoFiles.slice(0, plan.length);
-
-  // Each bubble holds its position (px) and velocity (px/frame)
   const bubbles = [];
 
   selected.forEach((filename, i) => {
@@ -516,10 +498,10 @@ const initHeroPhotoBubbles = () => {
     img.alt = '';
 
     const size = sizeForCategory(plan[i]);
-    const t = (size - 40) / 160; // 0(small/far)〜1(large/near)
+    const t = (size - 40) / 160;
     img.style.width = `${size}px`;
     img.style.height = `${size}px`;
-    img.style.opacity = (0.45 + t * 0.35).toFixed(2); // small=0.45, large=0.8
+    img.style.opacity = (0.45 + t * 0.35).toFixed(2);
 
     container.appendChild(img);
 
@@ -537,7 +519,6 @@ const initHeroPhotoBubbles = () => {
       targetScale: 1,
     };
 
-    // PC hover: stop & enlarge to fixed 250px
     const hoverScale = 250 / size;
     img.addEventListener('mouseenter', () => {
       bubble.hovered = true;
@@ -553,16 +534,14 @@ const initHeroPhotoBubbles = () => {
     bubbles.push(bubble);
   });
 
-  // Distribute initial directions evenly, with a small random jitter
   const angleStep = (Math.PI * 2) / bubbles.length;
-  const angleOffset = Math.random() * Math.PI * 2; // random rotation for the whole set
+  const angleOffset = Math.random() * Math.PI * 2;
   bubbles.forEach((b, i) => {
     const angle = angleOffset + angleStep * i + (Math.random() - 0.5) * 0.6;
     b.vx = Math.cos(angle) * b.speed;
     b.vy = Math.sin(angle) * b.speed;
   });
 
-  // Place bubbles with overlap avoidance
   const placeBubbles = (cw, ch) => {
     const placed = [];
     const overlaps = (x, y, size) => {
@@ -572,7 +551,7 @@ const initHeroPhotoBubbles = () => {
       for (const p of placed) {
         const dx = cx - p.cx;
         const dy = cy - p.cy;
-        const minDist = r + p.r + 10; // 10px margin
+        const minDist = r + p.r + 10;
         if (dx * dx + dy * dy < minDist * minDist) return true;
       }
       return false;
@@ -595,7 +574,6 @@ const initHeroPhotoBubbles = () => {
 
   if (prefersReducedMotion) return;
 
-  // Animation loop — bounce off container edges
   let initialized = false;
   const animate = () => {
     const cw = container.clientWidth;
@@ -607,22 +585,18 @@ const initHeroPhotoBubbles = () => {
     }
 
     bubbles.forEach((b) => {
-      // Smoothly interpolate scale
       b.scale += (b.targetScale - b.scale) * 0.08;
 
-      // Move only when not hovered
       if (!b.hovered) {
         b.x += b.vx;
         b.y += b.vy;
 
-        // Bounce off edges
         if (b.x <= 0) { b.x = 0; b.vx = Math.abs(b.vx); }
         if (b.y <= 0) { b.y = 0; b.vy = Math.abs(b.vy); }
         if (b.x + b.size >= cw) { b.x = cw - b.size; b.vx = -Math.abs(b.vx); }
         if (b.y + b.size >= ch) { b.y = ch - b.size; b.vy = -Math.abs(b.vy); }
       }
 
-      // translate to center, then scale from center
       const cx = b.x + b.size / 2;
       const cy = b.y + b.size / 2;
       b.el.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%) scale(${b.scale.toFixed(3)})`;
@@ -634,12 +608,8 @@ const initHeroPhotoBubbles = () => {
   requestAnimationFrame(animate);
 };
 
-/* =========================================================
-   Boot
-   ========================================================= */
-
 /* =================================================================
-   10. SCREENSHOT CAROUSEL
+   11. SCREENSHOT CAROUSEL
    ================================================================= */
 
 const initCarousel = () => {
@@ -668,7 +638,9 @@ const initCarousel = () => {
     for (let i = 0; i < count; i++) {
       const dot = document.createElement('button');
       dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-      dot.setAttribute('aria-label', `スライド ${i + 1}`);
+      // Translate the slide label based on the active language
+      const slideWord = document.documentElement.lang === 'en' ? 'Slide' : 'スライド';
+      dot.setAttribute('aria-label', `${slideWord} ${i + 1}`);
       dot.addEventListener('click', () => goTo(i));
       dotsContainer.appendChild(dot);
     }
@@ -702,7 +674,6 @@ const initCarousel = () => {
   prevBtn.addEventListener('click', () => { prev(); startAutoplay(); });
   nextBtn.addEventListener('click', () => { next(); startAutoplay(); });
 
-  // Touch/swipe support
   let touchStartX = 0;
   let touchEndX = 0;
   track.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
@@ -715,7 +686,6 @@ const initCarousel = () => {
     }
   });
 
-  // Pause on hover
   carousel.addEventListener('mouseenter', stopAutoplay);
   carousel.addEventListener('mouseleave', startAutoplay);
 
@@ -731,6 +701,176 @@ const initCarousel = () => {
   startAutoplay();
 };
 
+/* =========================================================
+   12. i18n Logic (Internationalization)
+   ========================================================= */
+
+const translations = {
+  en: {
+    meta: {
+      title: "Ogouchi Time Lens | Reviving a Sunken Village with AR — Okutama 70th Anniversary Project",
+      description: "In 1957, Ogouchi Village sank to the bottom of the lake following the completion of the Ogouchi Dam. Hold up your smartphone, and the past life of the village emerges. An AR project to revive the memories sleeping beneath Lake Okutama."
+    },
+    nav: {
+      story: "Story",
+      video: "Video",
+      features: "App",
+      heritage: "Heritage",
+      team: "Team",
+      contact: "Contact",
+      app_link: "Experience the App"
+    },
+    hero: {
+      subtitle: "Reviving the memories of a village sleeping at the bottom of the lake.",
+      description: "In 1957, Ogouchi Village sank beneath the waters with the completion of the Ogouchi Dam.<br>Hold up your smartphone, and the vibrant life of the former village emerges.",
+      btn_app: "Experience the App",
+      btn_video: "Watch Video"
+    },
+    story: {
+      title: "At the bottom of this lake,<br>a single village sleeps.",
+      p1: "The Ogouchi Reservoir, commonly known as Lake Okutama, is known as the water jar of Tokyo.<br>Did you know that a village is submerged at the bottom of this quiet lake?",
+      p2: "The village was named <strong>Ogouchi Village</strong>. Once known as the \"inner parlor of Tokyo,\" it was a beautiful village where numerous traditional performing arts were passed down. With the completion of the Ogouchi Dam in 1957, the people's livelihoods, festivals, and stories quietly faded beneath the water.",
+      p3: "To mark the 70th anniversary of the town's incorporation, we launched a project using AR technology to revive the memories sleeping at the bottom of the water. You can view historical documents, photographs, and testimonies from residents within the app, visualizing the landscape of the sunken village.",
+      p4: "It is completely free to use, with no download required. It is a Web app that anyone can launch anywhere as long as they have a smartphone and internet access (the 3D mode is only available around Lake Okutama)."
+    },
+    video: {
+      title: "Ogouchi Time Lens on Video.",
+      subtitle: "Watch the full scope of the project in this promotional video.",
+      play_text: "Play Video"
+    },
+    features: {
+      title: "Hold up your phone,<br>and the sunken village appears.",
+      description: "This WebAR app utilizes your smartphone's GPS and compass to superimpose the former appearance of Ogouchi Village onto the current landscape of Lake Okutama. When you hold your phone over the surface of the lake on-site, the landscape of that time spreads out before your eyes, offering an experience as if you have traveled back in time. Valuable photographs, testimonies from residents, and traditional performing arts are digitally archived, connecting the region's history to the future.",
+      btn_app: "Experience the App"
+    },
+    heritage: {
+      title: "Inherited Traditions,<br>Stories Passed Down.",
+      description: "In this project, we have digitally archived the traditional performing arts and folktales that breathe life into Ogouchi. The articles include links to videos, and you can listen to newly recorded folktales using the audio player within the app. Ogouchi Time Lens allows you to discover exactly where at the bottom of the lake these traditional arts were performed.",
+      badges: {
+        unesco: "UNESCO Intangible Cultural Heritage",
+        national: "National Important Intangible Folk Cultural Property",
+        tokyo: "Tokyo Designated Intangible Folk Cultural Property",
+        folktale: "10 Folktales Included"
+      },
+      titles: {
+        kashima: "Kashima Odori (Dance)",
+        kuruma: "Kawano Kuruma Ningyo (Puppetry)",
+        hara: "Hara Shishimai (Lion Dance)",
+        kawano: "Kawano Shishimai (Lion Dance)",
+        minwa: "Folktales of Ogouchi"
+      },
+      links: {
+        video: "Watch Video ▶",
+        audio: "Listen to Folktale ▶"
+      }
+    },
+    team: {
+      title: "From the Development Team.",
+      subtitle: "Formed from the 'Okutama Kawano Kuruma Ningyo Preservation Society,' which preserves the nationally designated important intangible folk cultural property 'Kawano Kuruma Ningyo,' the 70th Anniversary Project Department was established. From locals to transplants, people of all ages and genders teamed up to develop this app. It is our great joy that this development has forged new connections in Okutama and created something we can leave for the next generation.",
+      roles: {
+        director: "Director",
+        curator: "Curator",
+        coordinator: "Coordinator"
+      },
+      staff_sections: {
+        dev_staff: "Development Staff",
+        advisors: "Advising & Materials",
+        app_dev: "App Development",
+        content: "Content Creation",
+        promo: "Promotion"
+      },
+      special_thanks: {
+        title: "Special Thanks",
+        subtitle: "To everyone who cooperated with our interviews (in alphabetical order, titles omitted)"
+      }
+    },
+    social: {
+      title: "Latest Information.",
+      subtitle: "We deliver the latest project updates via social media.",
+      btn_follow: "Follow Us"
+    },
+    contact: {
+      title: "Contact Us.",
+      subtitle: "Please contact us regarding app bugs, project inquiries, interview requests, or if you can provide materials, photos, or testimonies about Ogouchi Village.",
+      btn_form: "Go to Contact Form"
+    },
+    footer: {
+      brand: "Ogouchi Time Lens",
+      subtitle: "Okutama Town 70th Anniversary Project",
+      copyright: "© 2026 Kawano Kuruma Ningyo Preservation Society. All rights reserved."
+    }
+  }
+};
+
+const DEFAULT_LANG = 'ja';
+let currentLang = DEFAULT_LANG;
+
+const getNestedTranslation = (obj, path) => {
+  return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+};
+
+const initI18n = () => {
+  // Save standard document elements to their default attributes
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.setAttribute('data-i18n-default', el.innerHTML);
+  });
+
+  // Save meta description specifically
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc) {
+    metaDesc.setAttribute('data-i18n-default', metaDesc.content);
+  }
+
+  // Hook up the language switcher dropdown
+  const langSwitcher = document.getElementById('lang-switcher');
+  if (langSwitcher) {
+    langSwitcher.addEventListener('change', (e) => {
+      setLanguage(e.target.value);
+    });
+  }
+};
+
+const setLanguage = (lang) => {
+  currentLang = lang;
+
+  // 1. Update text content
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    if (lang === DEFAULT_LANG) {
+      el.innerHTML = el.getAttribute('data-i18n-default');
+    } else {
+      const key = el.getAttribute('data-i18n');
+      const translatedText = getNestedTranslation(translations[lang], key);
+      if (translatedText) el.innerHTML = translatedText;
+    }
+  });
+
+  // 2. Update Meta Description
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc) {
+    if (lang === DEFAULT_LANG) {
+      metaDesc.content = metaDesc.getAttribute('data-i18n-default');
+    } else {
+      const translatedDesc = getNestedTranslation(translations[lang], 'meta.description');
+      if (translatedDesc) metaDesc.content = translatedDesc;
+    }
+  }
+
+  // 3. Update the HTML lang attribute for SEO and accessibility
+  document.documentElement.lang = lang;
+
+  // Re-build Carousel dots to update accessibility labels
+  const carousel = document.querySelector('.carousel');
+  if (carousel) {
+    const dotsContainer = carousel.querySelector('.carousel-dots');
+    if(dotsContainer) dotsContainer.innerHTML = '';
+    initCarousel();
+  }
+};
+
+
+/* =========================================================
+   Boot
+   ========================================================= */
 
 const init = () => {
   initScrollAnimations();
@@ -744,6 +884,7 @@ const init = () => {
   initLazyIframes();
   initCarousel();
   injectStructuredData();
+  initI18n();
 };
 
 if (document.readyState === 'loading') {
