@@ -40,15 +40,15 @@ const initScrollAnimations = () => {
   if (!animatedElements.length) return;
 
   const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1 }
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1 }
   );
 
   animatedElements.forEach((el) => observer.observe(el));
@@ -121,7 +121,7 @@ const initHeroParallax = () => {
 
   // Respect reduced-motion preference.
   const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
+    '(prefers-reduced-motion: reduce)'
   ).matches;
   if (prefersReducedMotion) return;
 
@@ -179,15 +179,15 @@ const initCounterAnimation = () => {
   if (!counters.length) return;
 
   const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            animateCounter(entry.target);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1 }
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          animateCounter(entry.target);
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1 }
   );
 
   counters.forEach((el) => {
@@ -303,9 +303,9 @@ const initMobileMenu = () => {
   // Close menu when clicking outside.
   document.addEventListener('click', (e) => {
     if (
-        navLinks.classList.contains('active') &&
-        !navLinks.contains(e.target) &&
-        !hamburger.contains(e.target)
+      navLinks.classList.contains('active') &&
+      !navLinks.contains(e.target) &&
+      !hamburger.contains(e.target)
     ) {
       navLinks.classList.remove('active');
       hamburger.classList.remove('active');
@@ -330,38 +330,42 @@ const initMobileMenu = () => {
    ========================================================= */
 
 const initLazyIframes = () => {
+  // Each placeholder should have:
+  //   class="lazy-iframe"
+  //   data-src="https://www.youtube.com/embed/VIDEO_ID"
+  //   (optional) data-title="Video title"
   const placeholders = document.querySelectorAll('.lazy-iframe');
   if (!placeholders.length) return;
 
   const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
 
-          const placeholder = entry.target;
-          const src = placeholder.dataset.src;
-          if (!src) return;
+        const placeholder = entry.target;
+        const src = placeholder.dataset.src;
+        if (!src) return;
 
-          const iframe = document.createElement('iframe');
-          iframe.src = src;
-          iframe.title = placeholder.dataset.title || '埋め込み動画';
-          iframe.width = placeholder.dataset.width || '560';
-          iframe.height = placeholder.dataset.height || '315';
-          iframe.frameBorder = '0';
-          iframe.allow =
-              'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-          iframe.allowFullscreen = true;
-          iframe.loading = 'lazy';
+        const iframe = document.createElement('iframe');
+        iframe.src = src;
+        iframe.title = placeholder.dataset.title || '埋め込み動画';
+        iframe.width = placeholder.dataset.width || '560';
+        iframe.height = placeholder.dataset.height || '315';
+        iframe.frameBorder = '0';
+        iframe.allow =
+            'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        iframe.allowFullscreen = true;
+        iframe.loading = 'lazy';
 
-          // Replace placeholder with iframe.
-          placeholder.replaceWith(iframe);
-          observer.unobserve(placeholder);
-        });
-      },
-      {
-        rootMargin: '200px 0px',
-        threshold: 0,
-      }
+        // Replace placeholder with iframe.
+        placeholder.replaceWith(iframe);
+        observer.unobserve(placeholder);
+      });
+    },
+    {
+      rootMargin: '200px 0px',
+      threshold: 0,
+    }
   );
 
   placeholders.forEach((el) => observer.observe(el));
@@ -373,28 +377,36 @@ const initLazyIframes = () => {
 
 const injectStructuredData = () => {
   const schemas = [
+    // Organization
     {
       '@context': 'https://schema.org',
       '@type': 'Organization',
       name: '川野車人形保存会',
       alternateName: 'Kawano Kuruma Ningyo Hozonkai',
-      description: '奥多摩湖の湖底に沈んだ小河内村をARで可視化するプロジェクト',
+      description:
+        '奥多摩湖の湖底に沈んだ小河内村をARで可視化するプロジェクト',
       url: window.location.origin,
     },
+
+    // WebSite
     {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       name: '小河内タイムレンズ',
       alternateName: 'Ogouchi Time Lens',
       url: window.location.origin,
-      description: '奥多摩湖の湖底に沈んだ小河内村をARで可視化するプロジェクト「小河内タイムレンズ」の公式サイト',
+      description:
+        '奥多摩湖の湖底に沈んだ小河内村をARで可視化するプロジェクト「小河内タイムレンズ」の公式サイト',
       inLanguage: 'ja',
     },
+
+    // Event
     {
       '@context': 'https://schema.org',
       '@type': 'Event',
       name: '奥多摩町町制施行70周年記念事業 — 小河内タイムレンズ',
-      description: '奥多摩町の町制施行70周年を記念し、小河内ダム建設で湖底に沈んだ小河内村をAR技術で蘇らせるプロジェクト',
+      description:
+        '奥多摩町の町制施行70周年を記念し、小河内ダム建設で湖底に沈んだ小河内村をAR技術で蘇らせるプロジェクト',
       startDate: '2025-04-01',
       eventStatus: 'https://schema.org/EventScheduled',
       eventAttendanceMode: 'https://schema.org/MixedEventAttendanceMode',
@@ -432,7 +444,7 @@ const initHeroPhotoBubbles = () => {
   if (!container) return;
 
   const prefersReducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
+    '(prefers-reduced-motion: reduce)'
   ).matches;
 
   const photoFiles = [
@@ -446,11 +458,13 @@ const initHeroPhotoBubbles = () => {
     '94.jpg','95.jpg','96.jpg','97.jpg','98.jpg','99.jpg',
   ];
 
+  // Fisher-Yates shuffle
   for (let i = photoFiles.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [photoFiles[i], photoFiles[j]] = [photoFiles[j], photoFiles[i]];
   }
 
+  // モバイル: アニメーションなし、ロゴ上に1つの静的バブル写真を表示
   const vw = window.innerWidth;
   if (vw <= 768) {
     const heroContent = document.querySelector('.hero-content');
@@ -467,19 +481,21 @@ const initHeroPhotoBubbles = () => {
     return;
   }
 
+  // PC: 既存の浮遊バブルアニメーション
   let nLarge, nMedium, nSmall;
-  if (vw <= 480) {
+  if (vw <= 480) {        // スマホ小: 合計3〜4
     nLarge = 1; nMedium = 1; nSmall = 1 + Math.floor(Math.random() * 2);
-  } else if (vw <= 768) {
+  } else if (vw <= 768) { // スマホ大〜タブレット: 合計4〜6
     nLarge = 1; nMedium = 2; nSmall = 1 + Math.floor(Math.random() * 2);
-  } else {
+  } else {                // PC: 合計7〜9
     nLarge = 2; nMedium = 3; nSmall = 2 + Math.floor(Math.random() * 2);
   }
 
+  // サイズ枠ごとにランダムなpx値を生成
   const sizeForCategory = (category) => {
-    if (category === 'large')  return 150 + Math.floor(Math.random() * 51);
-    if (category === 'medium') return 90 + Math.floor(Math.random() * 51);
-    return 40 + Math.floor(Math.random() * 41);
+    if (category === 'large')  return 150 + Math.floor(Math.random() * 51);  // 150〜200px
+    if (category === 'medium') return 90 + Math.floor(Math.random() * 51);   // 90〜140px
+    return 40 + Math.floor(Math.random() * 41);                              // 40〜80px (small)
   };
 
   const plan = [
@@ -490,6 +506,7 @@ const initHeroPhotoBubbles = () => {
   const selected = photoFiles.slice(0, plan.length);
   const bubbles = [];
 
+  // Each bubble holds its position (px) and velocity (px/frame)
   selected.forEach((filename, i) => {
     const img = document.createElement('img');
     img.src = `images/photos/${filename}`;
@@ -498,10 +515,10 @@ const initHeroPhotoBubbles = () => {
     img.alt = '';
 
     const size = sizeForCategory(plan[i]);
-    const t = (size - 40) / 160;
+    const t = (size - 40) / 160; // 0(small/far)〜1(large/near)
     img.style.width = `${size}px`;
     img.style.height = `${size}px`;
-    img.style.opacity = (0.45 + t * 0.35).toFixed(2);
+    img.style.opacity = (0.45 + t * 0.35).toFixed(2); // small=0.45, large=0.8
 
     container.appendChild(img);
 
@@ -519,6 +536,7 @@ const initHeroPhotoBubbles = () => {
       targetScale: 1,
     };
 
+    // PC hover: stop & enlarge to fixed 250px
     const hoverScale = 250 / size;
     img.addEventListener('mouseenter', () => {
       bubble.hovered = true;
@@ -534,14 +552,16 @@ const initHeroPhotoBubbles = () => {
     bubbles.push(bubble);
   });
 
+  // Distribute initial directions evenly, with a small random jitter
   const angleStep = (Math.PI * 2) / bubbles.length;
-  const angleOffset = Math.random() * Math.PI * 2;
+  const angleOffset = Math.random() * Math.PI * 2; // random rotation for the whole set
   bubbles.forEach((b, i) => {
     const angle = angleOffset + angleStep * i + (Math.random() - 0.5) * 0.6;
     b.vx = Math.cos(angle) * b.speed;
     b.vy = Math.sin(angle) * b.speed;
   });
 
+  // Place bubbles with overlap avoidance
   const placeBubbles = (cw, ch) => {
     const placed = [];
     const overlaps = (x, y, size) => {
@@ -551,7 +571,7 @@ const initHeroPhotoBubbles = () => {
       for (const p of placed) {
         const dx = cx - p.cx;
         const dy = cy - p.cy;
-        const minDist = r + p.r + 10;
+        const minDist = r + p.r + 10; // 10px margin
         if (dx * dx + dy * dy < minDist * minDist) return true;
       }
       return false;
@@ -574,6 +594,7 @@ const initHeroPhotoBubbles = () => {
 
   if (prefersReducedMotion) return;
 
+  // Animation loop — bounce off container edges
   let initialized = false;
   const animate = () => {
     const cw = container.clientWidth;
@@ -585,18 +606,22 @@ const initHeroPhotoBubbles = () => {
     }
 
     bubbles.forEach((b) => {
+      // Smoothly interpolate scale
       b.scale += (b.targetScale - b.scale) * 0.08;
 
+      // Move only when not hovered
       if (!b.hovered) {
         b.x += b.vx;
         b.y += b.vy;
 
+        // Bounce off edges
         if (b.x <= 0) { b.x = 0; b.vx = Math.abs(b.vx); }
         if (b.y <= 0) { b.y = 0; b.vy = Math.abs(b.vy); }
         if (b.x + b.size >= cw) { b.x = cw - b.size; b.vx = -Math.abs(b.vx); }
         if (b.y + b.size >= ch) { b.y = ch - b.size; b.vy = -Math.abs(b.vy); }
       }
 
+      // translate to center, then scale from center
       const cx = b.x + b.size / 2;
       const cy = b.y + b.size / 2;
       b.el.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%) scale(${b.scale.toFixed(3)})`;
@@ -608,8 +633,12 @@ const initHeroPhotoBubbles = () => {
   requestAnimationFrame(animate);
 };
 
+/* =========================================================
+   Boot
+   ========================================================= */
+
 /* =================================================================
-   11. SCREENSHOT CAROUSEL
+   10. SCREENSHOT CAROUSEL
    ================================================================= */
 
 const initCarousel = () => {
@@ -674,6 +703,7 @@ const initCarousel = () => {
   prevBtn.addEventListener('click', () => { prev(); startAutoplay(); });
   nextBtn.addEventListener('click', () => { next(); startAutoplay(); });
 
+  // Touch/swipe support
   let touchStartX = 0;
   let touchEndX = 0;
   track.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
@@ -686,6 +716,7 @@ const initCarousel = () => {
     }
   });
 
+  // Pause on hover
   carousel.addEventListener('mouseenter', stopAutoplay);
   carousel.addEventListener('mouseleave', startAutoplay);
 
