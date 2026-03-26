@@ -353,7 +353,7 @@ const initLazyIframes = () => {
         iframe.height = placeholder.dataset.height || '315';
         iframe.frameBorder = '0';
         iframe.allow =
-            'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+          'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
         iframe.allowFullscreen = true;
         iframe.loading = 'lazy';
 
@@ -363,6 +363,7 @@ const initLazyIframes = () => {
       });
     },
     {
+      // Start loading slightly before the element enters the viewport.
       rootMargin: '200px 0px',
       threshold: 0,
     }
@@ -504,9 +505,10 @@ const initHeroPhotoBubbles = () => {
     ...Array(nSmall).fill('small'),
   ];
   const selected = photoFiles.slice(0, plan.length);
-  const bubbles = [];
 
   // Each bubble holds its position (px) and velocity (px/frame)
+  const bubbles = [];
+
   selected.forEach((filename, i) => {
     const img = document.createElement('img');
     img.src = `images/photos/${filename}`;
