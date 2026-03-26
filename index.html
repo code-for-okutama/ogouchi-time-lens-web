@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- SEO Meta Tags -->
   <title data-i18n="meta.title">小河内タイムレンズ｜湖底に沈んだ村をARで蘇らせる — 奥多摩町町制施行70周年記念事業</title>
   <meta name="description" content="1957年、小河内ダムの完成により湖底に沈んだ小河内村。スマートフォンをかざすと、かつての村の暮らしが浮かび上がる。奥多摩湖の底に眠る記憶を蘇らせるARプロジェクト。">
   <meta name="keywords" content="小河内タイムレンズ,奥多摩湖,小河内村,小河内ダム,AR,拡張現実,奥多摩町,町制施行70周年,文化遺産,デジタルアーカイブ,湖底,歴史">
@@ -11,6 +12,7 @@
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://code-for-okutama.github.io/ogouchi-time-lens-web/">
 
+  <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://code-for-okutama.github.io/ogouchi-time-lens-web/">
   <meta property="og:title" content="小河内タイムレンズ｜湖底に沈んだ村をARで蘇らせる">
@@ -19,20 +21,24 @@
   <meta property="og:site_name" content="小河内タイムレンズ">
   <meta property="og:image" content="https://code-for-okutama.github.io/ogouchi-time-lens-web/images/ogp.png">
 
+  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="小河内タイムレンズ｜湖底に沈んだ村をARで蘇らせる">
   <meta name="twitter:description" content="1957年、小河内ダムの完成により湖底に沈んだ小河内村。スマートフォンをかざすと、かつての村の暮らしが浮かび上がる。">
   <meta name="twitter:image" content="https://code-for-okutama.github.io/ogouchi-time-lens-web/images/ogp.png">
 
+  <!-- Favicon -->
   <link rel="icon" href="images/favicon.ico" type="image/x-icon">
   <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
   <link rel="icon" type="image/png" sizes="512x512" href="images/favicon-512.png">
   <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 
+  <!-- Google Analytics (gtag.js) — 本番環境のみ有効 -->
   <script>
     if (location.origin + location.pathname.replace(/\/$/, '') === 'https://code-for-okutama.github.io/ogouchi-time-lens-web') {
       var s = document.createElement('script');
@@ -46,10 +52,14 @@
     }
   </script>
 
+  <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<!-- ============================
+     Navigation
+     ============================ -->
 <nav>
   <div class="nav-container">
     <a href="#" class="nav-logo">小河内タイムレンズ</a>
@@ -76,6 +86,9 @@
   </div>
 </nav>
 
+<!-- ============================
+       Hero Section
+       ============================ -->
 <section class="hero" id="hero">
   <div class="hero-overlay"></div>
   <div class="hero-photo-bubbles" aria-hidden="true"></div>
@@ -97,6 +110,9 @@
   </div>
 </section>
 
+<!-- ============================
+       Story Section
+       ============================ -->
 <section class="section section-story" id="story">
   <div class="container">
     <div class="section-header fade-in">
@@ -132,6 +148,9 @@
   <div class="story-panorama-spacer" aria-hidden="true"></div>
 </section>
 
+<!-- ============================
+     Video Section
+     ============================ -->
 <section class="section section-video" id="video">
   <div class="container">
     <div class="section-header fade-in">
@@ -159,6 +178,9 @@
   </div>
 </section>
 
+<!-- ============================
+       Features Section
+       ============================ -->
 <section class="section section-features" id="features">
   <div class="container">
     <div class="section-header fade-in">
@@ -166,6 +188,7 @@
       <p class="section-subtitle" data-i18n="features.description">スマートフォンのGPSやコンパス機能を活用し、現在の奥多摩湖の風景にかつての小河内村の姿を重ね合わせるWebARアプリです。現地で湖面にスマホをかざすと当時の風景が目の前に広がり、まるで過去へタイムトラベルしたかのような体験を提供します。貴重な写真や住民の証言、伝統芸能などをデジタルアーカイブ化し、地域の歴史を未来へつなぎます。</p>
     </div>
 
+    <!-- Screenshot Carousel -->
     <div class="carousel fade-in" aria-label="アプリ画面のスクリーンショット">
       <button class="carousel-btn carousel-btn-prev" aria-label="前へ">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
@@ -205,6 +228,9 @@
   </div>
 </section>
 
+<!-- ============================
+       Heritage Section
+       ============================ -->
 <section class="section section-heritage" id="heritage">
   <div class="container">
     <div class="section-header fade-in">
@@ -251,6 +277,9 @@
   </div>
 </section>
 
+<!-- ============================
+       Team / Staff Credits
+       ============================ -->
 <section class="section section-team" id="team">
   <div class="container">
     <div class="section-header fade-in">
@@ -345,6 +374,9 @@
   </div>
 </section>
 
+<!-- ============================
+      Social Media Section
+      ============================ -->
 <section class="section section-social" id="social">
   <div class="container">
     <div class="section-header fade-in">
@@ -364,6 +396,7 @@
         <a href="https://x.com/kawanokuruma" class="btn btn-social" target="_blank" rel="noopener noreferrer" data-i18n="social.btn_follow">フォローする</a>
       </div>
 
+      <!-- Instagram -->
       <div class="social-card">
         <a href="https://www.instagram.com/kawanokuruma/" class="social-profile-link" target="_blank" rel="noopener noreferrer">
           <img class="social-profile-img" src="images/OmpwzWlR_400x400.jpg" alt="川野車人形 Instagram プロフィール" loading="lazy">
@@ -378,6 +411,9 @@
   </div>
 </section>
 
+<!-- ============================
+     Contact Section
+     ============================ -->
 <section class="section section-contact" id="contact">
   <div class="container">
     <div class="contact-content fade-in">
@@ -390,12 +426,18 @@
   </div>
 </section>
 
+<!-- ============================
+     Footer
+     ============================ -->
 <footer>
   <div class="container">
     <div class="footer-content">
       <div class="footer-brand">
         <h3 data-i18n="footer.brand">小河内タイムレンズ</h3>
         <p data-i18n="footer.subtitle">奥多摩町町制施行70周年記念事業</p>
+      </div>
+      <div class="footer-bottom">
+        <p data-i18n="footer.copyright">&copy; 2026 川野車人形保存会. All rights reserved.</p>
       </div>
       <div class="footer-links">
         <a href="#story" data-i18n="nav.story">はじめに</a>
@@ -414,12 +456,10 @@
         </a>
       </div>
     </div>
-    <div class="footer-bottom">
-      <p data-i18n="footer.copyright">&copy; 2026 川野車人形保存会. All rights reserved.</p>
-    </div>
   </div>
 </footer>
 
+<!-- JavaScript -->
 <script src="main.js" defer></script>
 
 </body>
