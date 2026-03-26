@@ -4,7 +4,8 @@
  *
  * Vanilla JS — no dependencies.
  * Handles scroll animations, parallax, counter animation,
- * mobile menu, lazy-loaded iframes, and JSON-LD injection.
+ * mobile menu, lazy-loaded iframes, and JSON-LD injection,
+ * and Dynamic i18n switching.
  */
 
 'use strict';
@@ -163,7 +164,7 @@ const animateCounter = (el) => {
     // Ease-out cubic for a natural deceleration.
     const eased = 1 - Math.pow(1 - progress, 3);
 
-    el.textContent = Math.round(eased * target).toLocaleString('ja-JP');
+    el.textContent = Math.round(eased * target).toLocaleString(document.documentElement.lang === 'en' ? 'en-US' : 'ja-JP');
 
     if (progress < 1) {
       requestAnimationFrame(step);
@@ -668,7 +669,9 @@ const initCarousel = () => {
     for (let i = 0; i < count; i++) {
       const dot = document.createElement('button');
       dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-      dot.setAttribute('aria-label', `スライド ${i + 1}`);
+      // Translate the slide label based on the active language
+      const slideWord = document.documentElement.lang === 'en' ? 'Slide' : 'スライド';
+      dot.setAttribute('aria-label', `${slideWord} ${i + 1}`);
       dot.addEventListener('click', () => goTo(i));
       dotsContainer.appendChild(dot);
     }
@@ -731,6 +734,176 @@ const initCarousel = () => {
   startAutoplay();
 };
 
+/* =========================================================
+   12. i18n Logic (Internationalization)
+   ========================================================= */
+
+const translations = {
+  en: {
+    meta: {
+      title: "Ogouchi Time Lens | Reviving a Sunken Village with AR — Okutama 70th Anniversary Project",
+      description: "In 1957, Ogouchi Village sank to the bottom of the lake following the completion of the Ogouchi Dam. Hold up your smartphone, and the past life of the village emerges. An AR project to revive the memories sleeping beneath Lake Okutama."
+    },
+    nav: {
+      story: "Story",
+      video: "Video",
+      features: "App",
+      heritage: "Heritage",
+      team: "Team",
+      contact: "Contact",
+      app_link: "Experience the App"
+    },
+    hero: {
+      subtitle: "Reviving the memories of a village sleeping at the bottom of the lake.",
+      description: "In 1957, Ogouchi Village sank beneath the waters with the completion of the Ogouchi Dam.<br>Hold up your smartphone, and the vibrant life of the former village emerges.",
+      btn_app: "Experience the App",
+      btn_video: "Watch Video"
+    },
+    story: {
+      title: "At the bottom of this lake,<br>a single village sleeps.",
+      p1: "The Ogouchi Reservoir, commonly known as Lake Okutama, is known as the water jar of Tokyo.<br>Did you know that a village is submerged at the bottom of this quiet lake?",
+      p2: "The village was named <strong>Ogouchi Village</strong>. Once known as the \"inner parlor of Tokyo,\" it was a beautiful village where numerous traditional performing arts were passed down. With the completion of the Ogouchi Dam in 1957, the people's livelihoods, festivals, and stories quietly faded beneath the water.",
+      p3: "To mark the 70th anniversary of the town's incorporation, we launched a project using AR technology to revive the memories sleeping at the bottom of the water. You can view historical documents, photographs, and testimonies from residents within the app, visualizing the landscape of the sunken village.",
+      p4: "It is completely free to use, with no download required. It is a Web app that anyone can launch anywhere as long as they have a smartphone and internet access (the 3D mode is only available around Lake Okutama)."
+    },
+    video: {
+      title: "Ogouchi Time Lens on Video.",
+      subtitle: "Watch the full scope of the project in this promotional video.",
+      play_text: "Play Video"
+    },
+    features: {
+      title: "Hold up your phone,<br>and the sunken village appears.",
+      description: "This WebAR app utilizes your smartphone's GPS and compass to superimpose the former appearance of Ogouchi Village onto the current landscape of Lake Okutama. When you hold your phone over the surface of the lake on-site, the landscape of that time spreads out before your eyes, offering an experience as if you have traveled back in time. Valuable photographs, testimonies from residents, and traditional performing arts are digitally archived, connecting the region's history to the future.",
+      btn_app: "Experience the App"
+    },
+    heritage: {
+      title: "Inherited Traditions,<br>Stories Passed Down.",
+      description: "In this project, we have digitally archived the traditional performing arts and folktales that breathe life into Ogouchi. The articles include links to videos, and you can listen to newly recorded folktales using the audio player within the app. Ogouchi Time Lens allows you to discover exactly where at the bottom of the lake these traditional arts were performed.",
+      badges: {
+        unesco: "UNESCO Intangible Cultural Heritage",
+        national: "National Important Intangible Folk Cultural Property",
+        tokyo: "Tokyo Designated Intangible Folk Cultural Property",
+        folktale: "10 Folktales Included"
+      },
+      titles: {
+        kashima: "Kashima Odori (Dance)",
+        kuruma: "Kawano Kuruma Ningyo (Puppetry)",
+        hara: "Hara Shishimai (Lion Dance)",
+        kawano: "Kawano Shishimai (Lion Dance)",
+        minwa: "Folktales of Ogouchi"
+      },
+      links: {
+        video: "Watch Video ▶",
+        audio: "Listen to Folktale ▶"
+      }
+    },
+    team: {
+      title: "From the Development Team.",
+      subtitle: "Formed from the 'Okutama Kawano Kuruma Ningyo Preservation Society,' which preserves the nationally designated important intangible folk cultural property 'Kawano Kuruma Ningyo,' the 70th Anniversary Project Department was established. From locals to transplants, people of all ages and genders teamed up to develop this app. It is our great joy that this development has forged new connections in Okutama and created something we can leave for the next generation.",
+      roles: {
+        director: "Director",
+        curator: "Curator",
+        coordinator: "Coordinator"
+      },
+      staff_sections: {
+        dev_staff: "Development Staff",
+        advisors: "Advising & Materials",
+        app_dev: "App Development",
+        content: "Content Creation",
+        promo: "Promotion"
+      },
+      special_thanks: {
+        title: "Special Thanks",
+        subtitle: "To everyone who cooperated with our interviews (in alphabetical order, titles omitted)"
+      }
+    },
+    social: {
+      title: "Latest Information.",
+      subtitle: "We deliver the latest project updates via social media.",
+      btn_follow: "Follow Us"
+    },
+    contact: {
+      title: "Contact Us.",
+      subtitle: "Please contact us regarding app bugs, project inquiries, interview requests, or if you can provide materials, photos, or testimonies about Ogouchi Village.",
+      btn_form: "Go to Contact Form"
+    },
+    footer: {
+      brand: "Ogouchi Time Lens",
+      subtitle: "Okutama Town 70th Anniversary Project",
+      copyright: "© 2026 Kawano Kuruma Ningyo Preservation Society. All rights reserved."
+    }
+  }
+};
+
+const DEFAULT_LANG = 'ja';
+let currentLang = DEFAULT_LANG;
+
+const getNestedTranslation = (obj, path) => {
+  return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+};
+
+const initI18n = () => {
+  // Save standard document elements to their default attributes
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.setAttribute('data-i18n-default', el.innerHTML);
+  });
+
+  // Save meta description specifically
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc) {
+    metaDesc.setAttribute('data-i18n-default', metaDesc.content);
+  }
+
+  // Hook up the language switcher dropdown
+  const langSwitcher = document.getElementById('lang-switcher');
+  if (langSwitcher) {
+    langSwitcher.addEventListener('change', (e) => {
+      setLanguage(e.target.value);
+    });
+  }
+};
+
+const setLanguage = (lang) => {
+  currentLang = lang;
+
+  // 1. Update text content
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    if (lang === DEFAULT_LANG) {
+      el.innerHTML = el.getAttribute('data-i18n-default');
+    } else {
+      const key = el.getAttribute('data-i18n');
+      const translatedText = getNestedTranslation(translations[lang], key);
+      if (translatedText) el.innerHTML = translatedText;
+    }
+  });
+
+  // 2. Update Meta Description
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc) {
+    if (lang === DEFAULT_LANG) {
+      metaDesc.content = metaDesc.getAttribute('data-i18n-default');
+    } else {
+      const translatedDesc = getNestedTranslation(translations[lang], 'meta.description');
+      if (translatedDesc) metaDesc.content = translatedDesc;
+    }
+  }
+
+  // 3. Update the HTML lang attribute for SEO and accessibility
+  document.documentElement.lang = lang;
+
+  // Re-build Carousel dots to update accessibility labels
+  const carousel = document.querySelector('.carousel');
+  if (carousel) {
+    const dotsContainer = carousel.querySelector('.carousel-dots');
+    if(dotsContainer) dotsContainer.innerHTML = '';
+    initCarousel();
+  }
+};
+
+
+/* =========================================================
+   Boot
+   ========================================================= */
 
 const init = () => {
   initScrollAnimations();
@@ -744,6 +917,7 @@ const init = () => {
   initLazyIframes();
   initCarousel();
   injectStructuredData();
+  initI18n();
 };
 
 if (document.readyState === 'loading') {
