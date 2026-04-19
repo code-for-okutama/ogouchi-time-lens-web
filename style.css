@@ -2588,6 +2588,10 @@ footer {
     grid-row: 1;
     margin-bottom: 0;
     justify-self: start;
+    /* モバイルでは長文バッジ（例: 国指定重要無形民俗文化財・ユネスコ無形文化遺産記載）
+       が写真横の狭い1カラムに収まらないため、折り返しを許容する。 */
+    white-space: normal;
+    max-width: 100%;
   }
 
   .heritage-card h3 {
