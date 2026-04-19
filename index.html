@@ -45,10 +45,14 @@
     window.dataLayer = window.dataLayer || [];
     window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
 
-    // hostname + pathname prefix 判定。直接 /index.html 踏みでも正しく動く。
+    // hostname + pathname の境界付き判定。直接 /index.html 踏みでも正しく動き、
+    // かつ /ogouchi-time-lens-web-foo のような別パスは誤発火させない。
     if (
       location.hostname === 'code-for-okutama.github.io' &&
-      location.pathname.startsWith('/ogouchi-time-lens-web')
+      (
+        location.pathname === '/ogouchi-time-lens-web' ||
+        location.pathname.startsWith('/ogouchi-time-lens-web/')
+      )
     ) {
       const s = document.createElement('script');
       s.async = true;

@@ -97,8 +97,8 @@ const initSmoothScroll = () => {
 
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    // replaceState を使い戻るボタンで Hero まで戻れるようにする
-    // (pushState だとアンカー毎に履歴が積まれ、戻るUXが壊れる)。
+    // 現在の履歴エントリの URL ハッシュだけを更新し、
+    // アンカー遷移ごとに履歴を積まないようにする。
     history.replaceState(null, '', targetId);
 
     // Close mobile menu if open.
@@ -302,7 +302,7 @@ const initLazyIframes = () => {
         iframe.allowFullscreen = true;
         iframe.loading = 'lazy';
 
-        // placeWith は DOM から外すので unobserve より前に呼ぶ。
+        // 先に unobserve してから、placeholder を iframe に置き換える。
         observer.unobserve(placeholder);
         placeholder.replaceWith(iframe);
         remaining--;
@@ -670,7 +670,10 @@ const initCarousel = () => {
   };
 
   const stopAutoplay = () => {
-    if (autoplayTimer) clearInterval(autoplayTimer);
+    if (autoplayTimer) {
+      clearInterval(autoplayTimer);
+      autoplayTimer = null;
+    }
   };
 
   prevBtn.addEventListener('click', () => { prev(); startAutoplay(); });
@@ -693,10 +696,14 @@ const initCarousel = () => {
   carousel.addEventListener('mouseenter', stopAutoplay);
   carousel.addEventListener('mouseleave', startAutoplay);
 
-  // 裏タブではタイマーを止めてバッテリー節約
+  // 裏タブではタイマーを止めてバッテリー節約。
+  // hover で一時停止中のカルーセルはタブ復帰でも再開させない。
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) stopAutoplay();
-    else startAutoplay();
+    if (document.hidden) {
+      stopAutoplay();
+    } else if (!carousel.matches(':hover')) {
+      startAutoplay();
+    }
   });
 
   const handleResize = () => {
