@@ -1,10 +1,11 @@
 /**
  * main.js
- * 小河内タイムレンズ (Ogouchi Time Lens) - PR Homepage
+ * 小河内タイムレンズ (Ogouchi Time Lens) — PR Homepage
  *
- * Vanilla JS — no dependencies.
- * Handles scroll animations, parallax, counter animation,
- * mobile menu, lazy-loaded iframes, and JSON-LD injection.
+ * Vanilla JS、依存なし。
+ * 担当: スクロール演出 / Nav のスクロール状態 / スムーススクロール /
+ *       Hero パララックス / 水面 ripple / モバイルメニュー / iframe 遅延読込 /
+ *       JSON-LD 注入 / Hero 浮遊写真バブル / スクショカルーセル。
  */
 
 'use strict';
@@ -96,8 +97,9 @@ const initSmoothScroll = () => {
 
     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    // Update URL hash without jumping.
-    history.pushState(null, '', targetId);
+    // replaceState を使い戻るボタンで Hero まで戻れるようにする
+    // (pushState だとアンカー毎に履歴が積まれ、戻るUXが壊れる)。
+    history.replaceState(null, '', targetId);
 
     // Close mobile menu if open.
     const mobileMenu = document.querySelector('.nav-links');
@@ -141,63 +143,7 @@ const initHeroParallax = () => {
 };
 
 /* =========================================================
-   5. Counter animation (stats section)
-   ========================================================= */
-
-/**
- * Animate a single counter element from 0 to its target value.
- * The target is read from the `data-target` attribute.
- * @param {HTMLElement} el
- */
-const animateCounter = (el) => {
-  const target = parseInt(el.dataset.target, 10);
-  if (isNaN(target)) return;
-
-  const duration = 2000; // ms
-  const startTime = performance.now();
-
-  const step = (now) => {
-    const elapsed = now - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-
-    // Ease-out cubic for a natural deceleration.
-    const eased = 1 - Math.pow(1 - progress, 3);
-
-    el.textContent = Math.round(eased * target).toLocaleString('ja-JP');
-
-    if (progress < 1) {
-      requestAnimationFrame(step);
-    }
-  };
-
-  requestAnimationFrame(step);
-};
-
-const initCounterAnimation = () => {
-  const counters = document.querySelectorAll('[data-target]');
-  if (!counters.length) return;
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          animateCounter(entry.target);
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.1 }
-  );
-
-  counters.forEach((el) => {
-    // Initialise display to 0 so the page does not flash the final number.
-    el.textContent = '0';
-    observer.observe(el);
-  });
-};
-
-/* =========================================================
-   6. Water ripple effect (CSS-driven, JS injects keyframes)
+   5. Water ripple effect (CSS-driven, JS injects keyframes)
    ========================================================= */
 
 const initWaterRipple = () => {
@@ -282,7 +228,7 @@ const initWaterRipple = () => {
 };
 
 /* =========================================================
-   7. Mobile menu toggle (hamburger)
+   6. Mobile menu toggle (hamburger)
    ========================================================= */
 
 const initMobileMenu = () => {
@@ -325,7 +271,7 @@ const initMobileMenu = () => {
 };
 
 /* =========================================================
-   8. Lazy loading for embedded content (YouTube iframes)
+   7. Lazy loading for embedded content (YouTube iframes)
    ========================================================= */
 
 const initLazyIframes = () => {
@@ -356,9 +302,11 @@ const initLazyIframes = () => {
         iframe.allowFullscreen = true;
         iframe.loading = 'lazy';
 
-        // Replace placeholder with iframe.
-        placeholder.replaceWith(iframe);
+        // placeWith は DOM から外すので unobserve より前に呼ぶ。
         observer.unobserve(placeholder);
+        placeholder.replaceWith(iframe);
+        remaining--;
+        if (remaining <= 0) observer.disconnect();
       });
     },
     {
@@ -368,11 +316,12 @@ const initLazyIframes = () => {
     }
   );
 
+  let remaining = placeholders.length;
   placeholders.forEach((el) => observer.observe(el));
 };
 
 /* =========================================================
-   9. Structured data (JSON-LD) injection
+   8. Structured data (JSON-LD) injection
    ========================================================= */
 
 const injectStructuredData = () => {
@@ -436,7 +385,7 @@ const injectStructuredData = () => {
 };
 
 /* =========================================================
-   10. Hero photo bubbles — floating memory photos
+   9. Hero photo bubbles — floating memory photos
    ========================================================= */
 
 const initHeroPhotoBubbles = () => {
@@ -447,6 +396,9 @@ const initHeroPhotoBubbles = () => {
     '(prefers-reduced-motion: reduce)'
   ).matches;
 
+  // Hero 背景に流す小河内村の歴史写真ファイル名（images/photos/ 配下）。
+  // 番号が飛び飛びなのは原資料のアーカイブ番号を踏襲しているため。
+  // 写真を追加/差し替えした際は images/photos/ の実体と本配列を手動同期すること。
   const photoFiles = [
     '00.jpg','01.jpg','02.jpg','03.jpg','05.jpg','07.jpg','09.jpg',
     '100.jpg','1001.jpg','1004.jpg','101.jpg','102.jpg','103.jpg','112.jpg',
@@ -595,9 +547,17 @@ const initHeroPhotoBubbles = () => {
 
   if (prefersReducedMotion) return;
 
-  // Animation loop — bounce off container edges
+  // Hero が viewport 外 or タブ非アクティブの間は rAF を発火させず、
+  // 無限ループによる無駄な CPU/GPU 負荷を避ける。
+  // 再開は IntersectionObserver と visibilitychange がトリガする。
   let initialized = false;
+  let heroVisible = true;
+  let rafPending = false;
+
   const animate = () => {
+    rafPending = false;
+    if (!heroVisible || document.hidden) return;
+
     const cw = container.clientWidth;
     const ch = container.clientHeight;
 
@@ -628,19 +588,33 @@ const initHeroPhotoBubbles = () => {
       b.el.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%) scale(${b.scale.toFixed(3)})`;
     });
 
+    scheduleFrame();
+  };
+
+  const scheduleFrame = () => {
+    if (rafPending) return;
+    rafPending = true;
     requestAnimationFrame(animate);
   };
 
-  requestAnimationFrame(animate);
+  new IntersectionObserver(
+    (entries) => {
+      heroVisible = entries[0].isIntersecting;
+      if (heroVisible) scheduleFrame();
+    },
+    { threshold: 0 }
+  ).observe(container);
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && heroVisible) scheduleFrame();
+  });
+
+  scheduleFrame();
 };
 
 /* =========================================================
-   Boot
+   10. Screenshot carousel
    ========================================================= */
-
-/* =================================================================
-   10. SCREENSHOT CAROUSEL
-   ================================================================= */
 
 const initCarousel = () => {
   const carousel = document.querySelector('.carousel');
@@ -713,11 +687,17 @@ const initCarousel = () => {
       diff > 0 ? next() : prev();
       startAutoplay();
     }
-  });
+  }, { passive: true });
 
   // Pause on hover
   carousel.addEventListener('mouseenter', stopAutoplay);
   carousel.addEventListener('mouseleave', startAutoplay);
+
+  // 裏タブではタイマーを止めてバッテリー節約
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stopAutoplay();
+    else startAutoplay();
+  });
 
   const handleResize = () => {
     updateSlidesPerView();
@@ -725,19 +705,23 @@ const initCarousel = () => {
     goTo(Math.min(currentIndex, maxIndex()));
   };
 
-  window.addEventListener('resize', handleResize);
+  // resize は連続イベントなので rAF で throttle。
+  window.addEventListener('resize', rafThrottle(handleResize));
   updateSlidesPerView();
   buildDots();
   startAutoplay();
 };
 
 
+/* =========================================================
+   Boot
+   ========================================================= */
+
 const init = () => {
   initScrollAnimations();
   initNavScroll();
   initSmoothScroll();
   initHeroParallax();
-  initCounterAnimation();
   initWaterRipple();
   initHeroPhotoBubbles();
   initMobileMenu();

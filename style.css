@@ -450,14 +450,9 @@ section {
   border-radius: 1px;
 }
 
-/* Alternating section backgrounds */
-section:nth-of-type(even) {
-  background-color: var(--bg-secondary);
-}
-
-section:nth-of-type(odd) {
-  background-color: var(--bg-primary);
-}
+/* 旧: section:nth-of-type(even/odd) の交互背景ルールは、
+   各 .section-* 個別の background-color 指定に後勝ちで上書きされ
+   dead rule となっていたため削除。背景は各セクション側で明示指定する。 */
 
 
 /* =============================================================
@@ -2078,7 +2073,7 @@ footer {
   margin-top: 0.75rem;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--accent-gold);
+  color: var(--gold);
   text-decoration: none;
   padding: 0.45rem 1.2rem;
   border: 1px solid rgba(139, 115, 85, 0.3);
@@ -2087,7 +2082,7 @@ footer {
 }
 
 .heritage-link:hover {
-  background: var(--accent-gold);
+  background: var(--gold);
   color: var(--bg-primary);
 }
 
